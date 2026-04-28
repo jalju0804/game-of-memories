@@ -614,17 +614,13 @@ Optional future extension:
 Rules:
 
 ```text
-Rounds 1-5:
-  Continue regardless of correctness.
-
-Rounds 6+:
-  Correct answer -> next round.
-  Wrong answer -> finish run.
+Correct answer -> next round.
+Wrong answer or timeout -> finish run.
 ```
 
 Session completion:
 
-- A run ends after a wrong answer on round 6+.
+- A run ends after any wrong answer or timeout.
 - A user may also leave, creating an abandoned session.
 - Final result page should show saved session stats.
 
@@ -794,8 +790,8 @@ Test:
 - Create round
 - Guess correct
 - Guess wrong
-- Round 1-5 continue behavior
-- Round 6+ wrong ends run
+- Correct guess allows next round
+- Wrong guess or timeout ends run
 - Leaderboard ordering
 - Diagnostics DB failure handling
 

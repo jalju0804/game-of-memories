@@ -120,8 +120,7 @@ bearFeastRouter.post(
         return res.json({ round: publicRound(latestRound) });
       }
 
-      const nextRoundNumber = latestRound.round_number + 1;
-      if (nextRoundNumber > 6 && !latestGuess.rows[0].correct) {
+      if (!latestGuess.rows[0].correct) {
         await query(
           `UPDATE game_sessions
            SET status = 'completed', finished_at = COALESCE(finished_at, now())
@@ -227,7 +226,7 @@ bearFeastRouter.post(
     const nextBestStreak = Math.max(round.best_streak, nextStreak);
     const nextCorrectCount = round.correct_count + (correct ? 1 : 0);
     const nextTotalScore = round.total_score + score;
-    const runComplete = round.round_number >= 6 && !correct;
+    const runComplete = !correct;
 
     await query(
       `INSERT INTO guesses (

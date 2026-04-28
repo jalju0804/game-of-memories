@@ -449,9 +449,9 @@ function GameDetailScreen({
         <h1>고기왕 곰찾기</h1>
         <p>15초 동안 곰들을 관찰하세요. 시간이 끝나면 5초 안에 가장 많이 먹은 곰을 고릅니다.</p>
         <ul className="rule-list">
-          <li>5라운드까지는 기본 코스입니다.</li>
+          <li>오답이면 즉시 기록이 확정됩니다.</li>
           <li>라운드가 올라갈수록 먹는 속도가 빨라집니다.</li>
-          <li>6라운드부터는 오답이면 기록이 확정됩니다.</li>
+          <li>정답을 맞춘 경우에만 다음 라운드로 넘어갑니다.</li>
         </ul>
         <div className="detail-stats">
           <span>최고 점수 {stats.bestScore}</span>

@@ -206,7 +206,7 @@ Rules text should be compact:
 ```text
 15초 동안 곰들을 관찰하세요.
 시간이 끝나면 5초 안에 가장 많이 먹은 곰을 고릅니다.
-5라운드 이후는 정답일 때만 계속 진행됩니다.
+오답이면 즉시 기록이 확정됩니다.
 ```
 
 ### 5.5 Bear Game: Countdown
@@ -305,9 +305,8 @@ Recommended visual:
 
 Progression:
 
-- Rounds 1 to 5: continue regardless of correctness.
-- Round 6 and later: continue only when correct.
-- Wrong answer after round 5 ends the run.
+- Correct answer: continue to the next round.
+- Wrong answer or timeout: finish the run immediately.
 
 ### 5.9 Final Result
 

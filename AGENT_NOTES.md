@@ -40,6 +40,6 @@ Read this before planning or implementing changes so repeated mistakes are not r
 - A run should have about 5 normal rounds.
 - Across the 5 rounds, the average eating interval should get faster each round.
 - In later rounds, bear eating counts should become flatter and closer together so the correct bear is harder to identify.
-- After round 5, the game can continue into extra rounds only when the player answers correctly.
+- The player can continue to the next round only after a correct answer. Any wrong answer or timeout immediately completes the run and saves the record.
 - Which bear eats the most must be randomized per round. Avoid fixed or easily learnable answer patterns.
 - Use seeded randomness for round generation when possible so the server can own the answer while the client can replay the same eating animation deterministically.

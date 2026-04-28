@@ -2,14 +2,14 @@
   "services": [
     {
       "serviceId": "bear-feast-web",
-      "image": "ghcr.io/<github-org>/bear-feast-web:sha-<commit>",
+      "image": "ghcr.io/jalju0804/bear-feast-web:sha-d643fec67fbe0514bcaa544e832380d5f15e2142",
       "port": 80,
       "replicas": 1,
       "strategy": "Rollout"
     },
     {
       "serviceId": "bear-feast-api",
-      "image": "ghcr.io/<github-org>/bear-feast-api:sha-<commit>",
+      "image": "ghcr.io/jalju0804/bear-feast-api:sha-d643fec67fbe0514bcaa544e832380d5f15e2142",
       "port": 8080,
       "replicas": 1,
       "strategy": "Rollout"
