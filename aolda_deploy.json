@@ -1,0 +1,18 @@
+{
+  "services": [
+    {
+      "serviceId": "bear-feast-web",
+      "image": "ghcr.io/<github-org>/bear-feast-web:sha-<commit>",
+      "port": 80,
+      "replicas": 1,
+      "strategy": "Rollout"
+    },
+    {
+      "serviceId": "bear-feast-api",
+      "image": "ghcr.io/<github-org>/bear-feast-api:sha-<commit>",
+      "port": 8080,
+      "replicas": 1,
+      "strategy": "Rollout"
+    }
+  ]
+}

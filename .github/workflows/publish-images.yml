@@ -1,0 +1,90 @@
+name: Publish Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      vite_api_base_url:
+        description: "Public API base URL baked into the web image, for example https://api.example.com"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    name: Build and push GHCR images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare image names
+        id: image
+        shell: bash
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          short_sha="${GITHUB_SHA::7}"
+          echo "owner=${owner}" >> "${GITHUB_OUTPUT}"
+          echo "tag=sha-${GITHUB_SHA}" >> "${GITHUB_OUTPUT}"
+          echo "short_tag=sha-${short_sha}" >> "${GITHUB_OUTPUT}"
+
+      - name: Build and push web image
+        run: |
+          docker buildx build \
+            --file Dockerfile.web \
+            --build-arg VITE_API_BASE_URL="${{ inputs.vite_api_base_url }}" \
+            --tag ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-web:${{ steps.image.outputs.tag }} \
+            --tag ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-web:${{ steps.image.outputs.short_tag }} \
+            --push \
+            .
+
+      - name: Build and push API image
+        run: |
+          docker buildx build \
+            --file Dockerfile.api \
+            --tag ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-api:${{ steps.image.outputs.tag }} \
+            --tag ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-api:${{ steps.image.outputs.short_tag }} \
+            --push \
+            .
+
+      - name: Generate AODS deploy config artifact
+        shell: bash
+        run: |
+          cat > aolda_deploy.generated.json <<EOF
+          {
+            "services": [
+              {
+                "serviceId": "bear-feast-web",
+                "image": "ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-web:${{ steps.image.outputs.tag }}",
+                "port": 80,
+                "replicas": 1,
+                "strategy": "Rollout"
+              },
+              {
+                "serviceId": "bear-feast-api",
+                "image": "ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-api:${{ steps.image.outputs.tag }}",
+                "port": 8080,
+                "replicas": 1,
+                "strategy": "Rollout"
+              }
+            ]
+          }
+          EOF
+
+      - name: Upload AODS deploy config
+        uses: actions/upload-artifact@v4
+        with:
+          name: aolda-deploy-${{ steps.image.outputs.short_tag }}
+          path: aolda_deploy.generated.json

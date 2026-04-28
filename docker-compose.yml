@@ -1,0 +1,50 @@
+services:
+  db:
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    environment:
+      POSTGRES_DB: bear_feast
+      POSTGRES_USER: bear_feast
+      POSTGRES_PASSWORD: bear_feast
+    ports:
+      - "5432:5432"
+    volumes:
+      - bear-feast-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bear_feast -d bear_feast"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      DATABASE_URL: postgres://bear_feast:bear_feast@db:5432/bear_feast
+      SESSION_TTL_DAYS: 30
+      CORS_ORIGIN: http://localhost:8088
+      API_VERSION: 0.1.0
+      BUILD_SHA: local-compose
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+    ports:
+      - "8088:80"
+    depends_on:
+      - api
+
+volumes:
+  bear-feast-db:
