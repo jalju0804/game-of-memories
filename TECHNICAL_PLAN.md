@@ -8,7 +8,7 @@ The app must exercise:
 
 - Web frontend deployment
 - API server deployment
-- PostgreSQL database deployment
+- External DB connectivity
 - Web to API networking
 - API to DB networking
 - Runtime environment configuration
@@ -40,7 +40,8 @@ Reasoning:
 - Node.js
 - Express
 - TypeScript
-- `pg` for PostgreSQL
+- Current implementation: `pg` for local/CI PostgreSQL
+- Target production DB: PXC/MySQL through the shared cluster service
 - Opaque bearer session tokens
 
 Reasoning:
@@ -51,12 +52,14 @@ Reasoning:
 
 ### DB
 
-- PostgreSQL
+- Local/CI: PostgreSQL compose service
+- Production target: PXC/MySQL at `aolda-games-haproxy.shared.svc.cluster.local:3306`
 
 Reasoning:
 
 - Better deployment validation than SQLite because it exercises real service networking.
 - Familiar for auth, sessions, records, and leaderboards.
+- The backend DB adapter must be migrated from PostgreSQL to MySQL before using the production PXC target.
 
 ## 3. Repository Structure
 
@@ -147,30 +150,30 @@ Runtime env:
 ```text
 NODE_ENV=production
 PORT=8080
-DATABASE_URL=postgres://bear_feast:<password>@<external-postgres-host>:5432/bear_feast
+DATABASE_URL=mysql://<db-user>:<db-password>@aolda-games-haproxy.shared.svc.cluster.local:3306/<db-name>
 SESSION_TTL_DAYS=30
-CORS_ORIGIN=<web-origin-or-*>
+CORS_ORIGIN=https://bear-game.ajou.app
 BUILD_SHA=<commit-sha>
 API_VERSION=1.0.0
 ```
 
-### PostgreSQL Database
+### Production Database
 
 Purpose:
 
-- PostgreSQL database.
+- External/shared PXC/MySQL database.
 
 Deployment:
 
 - Not deployed by AODS.
-- Use an external or managed PostgreSQL instance.
+- Use `aolda-games-haproxy.shared.svc.cluster.local:3306`.
 - Inject the connection string into the API service as `DATABASE_URL`.
-- Use `docker-compose.yml` DB only for local development and CI smoke tests.
+- Use `docker-compose.yml` PostgreSQL DB only for local development and CI smoke tests until the MySQL adapter migration is complete.
 
 Runtime env:
 
 ```text
-DATABASE_URL=postgres://bear_feast:<password>@<external-postgres-host>:5432/bear_feast
+DATABASE_URL=mysql://<db-user>:<db-password>@aolda-games-haproxy.shared.svc.cluster.local:3306/<db-name>
 ```
 
 Important AODS note:
@@ -215,7 +218,7 @@ Open question before production deployment:
 
 - How AODS injects service environment variables.
 - How AODS provides secrets.
-- Which external PostgreSQL host will be used for production.
+- Which public API origin will be used for `VITE_API_BASE_URL`.
 - How `DATABASE_URL` is stored and rotated in AODS secrets.
 
 ## 6. Authentication
@@ -717,16 +720,13 @@ Server must bind:
 0.0.0.0:8080
 ```
 
-### DB Image
+### Local DB Image
 
-For AODS image-based deployment:
-
-- Use a small custom image based on `postgres`.
-- Copy `db/init.sql` into `/docker-entrypoint-initdb.d/`.
-
-For local development:
+For local development and CI smoke tests:
 
 - Official `postgres` image is fine.
+- Copy `db/init.sql` into `/docker-entrypoint-initdb.d/`.
+- Do not include this DB image in `aolda_deploy.json`.
 
 ## 15. Migrations
 

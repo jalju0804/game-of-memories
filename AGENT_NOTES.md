@@ -9,10 +9,12 @@ Read this before planning or implementing changes so repeated mistakes are not r
 - For this project, treat the app as a mini-game collection for AODS deployment validation, not as a single-game standalone app.
 - `고기왕 곰찾기` is one mini-game inside the collection, not the whole product.
 - Remove `순간 고기 반응` and `곰 카드 기억`; do not show coming-soon mini-game cards unless the user asks to add them back.
-- The intended runtime architecture should include web, API server, and PostgreSQL persistence, even if that looks functionally excessive for a small game.
-- Do not deploy the database through AODS for this project. AODS should deploy only `bear-feast-web` and `bear-feast-api`; the API must connect to an external/managed PostgreSQL via `DATABASE_URL`. Keep the compose DB only for local development and CI smoke tests.
+- The intended runtime architecture should include web, API server, and database persistence, even if that looks functionally excessive for a small game.
+- Do not deploy the database through AODS for this project. AODS should deploy only `bear-feast-web` and `bear-feast-api`; the API must connect to the external/shared DB via `DATABASE_URL`. Keep the compose DB only for local development and CI smoke tests.
+- Target production DB is the shared PXC/MySQL service `aolda-games-haproxy.shared.svc.cluster.local:3306`; do not document it as PostgreSQL. Current API code still uses PostgreSQL `pg`, so production DB support requires a MySQL adapter migration before deploying against that service.
 - Keep AODS deployment concerns visible while planning: service IDs, container ports, multi-service configuration, registry images, and runtime environment settings.
 - CI should continue to cover `npm ci`, `npm run check`, `npm run build`, Docker compose smoke testing, and manual GHCR image publishing for web/api only.
+- Keep deployment env documentation in sync: `DEPLOY_ENV.md`, `apps/api/.env.example`, and `apps/web/.env.example`.
 - Design the frontend and API so a future mobile app can reuse the same backend and game flow. Web is first, but avoid web-only assumptions in core game/session APIs.
 - Frontend quality is a first-class requirement: polished visual design, smooth interactions, no noticeable jank, strong mobile responsiveness, clear loading/error/empty states, and game animations that feel intentional rather than placeholder-like.
 - Preferred visual direction: retro Korean feature-phone mini-game feel with pixel art, inspired by early mobile games. Do not copy exact reference assets or UI, but pursue the same compact, colorful, forest-game, pixel-art mood.

@@ -138,7 +138,14 @@ private 저장소라면 `repositoryToken`도 추가한다.
 
 이미지 태그는 `sha-<full-commit-sha>`와 `sha-<short-commit-sha>`를 함께 발행한다. AODS에는 immutable tag인 `sha-<full-commit-sha>` 사용을 권장한다.
 
-현재 이 게임 저장소에서는 DB를 AODS 서비스로 배포하지 않는다. API 서비스는 외부 PostgreSQL 또는 별도 관리 DB의 `DATABASE_URL`을 환경변수로 받아야 한다. 로컬 개발과 CI smoke test에서만 `docker-compose.yml`의 `db` 서비스를 사용한다.
+현재 이 게임 저장소에서는 DB를 AODS 서비스로 배포하지 않는다. API 서비스는 `shared` namespace의 PXC/MySQL 서비스인 `aolda-games-haproxy.shared.svc.cluster.local:3306`에 `DATABASE_URL`로 연결하는 전제다. 로컬 개발과 CI smoke test에서만 `docker-compose.yml`의 `db` 서비스를 사용한다.
+
+주의: 현재 API 구현은 PostgreSQL `pg` 드라이버 기반이다. 위 PXC/MySQL 서비스에 실제 연결하려면 백엔드 DB 어댑터를 MySQL 호환 구현으로 바꿔야 한다.
+
+배포 시 필요한 환경변수는 저장소의 `DEPLOY_ENV.md`와 서비스별 `.env.example` 파일을 기준으로 입력한다.
+
+- API 런타임 env: `apps/api/.env.example`
+- Web 빌드타임 env: `apps/web/.env.example`
 
 ## 7. 자주 나는 오류
 
