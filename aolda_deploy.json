@@ -2,14 +2,14 @@
   "services": [
     {
       "serviceId": "bear-feast-web",
-      "image": "ghcr.io/jalju0804/bear-feast-web:sha-e970f0264ae52bd137badd673054f13234d90b20",
+      "image": "ghcr.io/jalju0804/bear-feast-web:sha-2376a126681667bf9654a64e0df0ce7f4df643a1",
       "port": 80,
       "replicas": 1,
       "strategy": "Rollout"
     },
     {
       "serviceId": "bear-feast-api",
-      "image": "ghcr.io/jalju0804/bear-feast-api:sha-e970f0264ae52bd137badd673054f13234d90b20",
+      "image": "ghcr.io/jalju0804/bear-feast-api:sha-2376a126681667bf9654a64e0df0ce7f4df643a1",
       "port": 8080,
       "replicas": 1,
       "strategy": "Rollout"
