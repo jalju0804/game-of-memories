@@ -44,6 +44,7 @@ jobs:
         run: |
           docker buildx build \
             --file Dockerfile.web \
+            --platform linux/amd64,linux/arm64 \
             --build-arg VITE_API_BASE_URL="${{ inputs.vite_api_base_url }}" \
             --tag ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-web:${{ steps.image.outputs.tag }} \
             --tag ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-web:${{ steps.image.outputs.short_tag }} \
@@ -54,6 +55,7 @@ jobs:
         run: |
           docker buildx build \
             --file Dockerfile.api \
+            --platform linux/amd64,linux/arm64 \
             --tag ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-api:${{ steps.image.outputs.tag }} \
             --tag ghcr.io/${{ steps.image.outputs.owner }}/bear-feast-api:${{ steps.image.outputs.short_tag }} \
             --push \
